@@ -4,5 +4,4 @@ numpy
 scikit-learn
 plotly.express
 google.generativeai
-json
 matplotlib.pyplot
