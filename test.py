@@ -8,3 +8,7 @@ st.write('This web app is running entirely from Python.')
 # Display text formatted with Markdown
 st.markdown('### Streamlit makes development **easy** and '
 			'**fast**.')
+
+## ===BEFORE RUNNING THE CMD IN TERMINAL===
+# paste this cmd in first : cd directory/to/your/app
+# Ex. for me it's cd "F:\CU 2\NLP\PA4\strlit_app"
