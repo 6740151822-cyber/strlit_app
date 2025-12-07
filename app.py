@@ -129,3 +129,13 @@ st.subheader("Noun Case DataFrame (with articles)")
 st.dataframe(df.sort_index())
 fig = px.pie(sizes, names=labels, values=sizes, title="Pie Chart of German Genders")
 st.plotly_chart(fig)
+def convert_df(df):
+   return df.to_csv(index=False).encode('utf-8')
+csv = convert_df(df)
+st.download_button(
+   "Press to Download",
+   csv,
+   "file.csv",
+   "text/csv",
+   key='download-csv'
+)
