@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import google.generativeai as genai
 import json
-import matplotlib.pyplot as plt 
 import plotly.express as px
 
 api_key = st.sidebar.text_input("Enter your Google Generative AI API Key:", type="password")
@@ -116,11 +115,6 @@ def OuterPercentCount(values):
         count = int(round(pct*total/100.0))
         return f"{count} ({pct:.1f}%)"
     return InnerPercentCount
-
-plt.figure(figsize=(6,6))
-plt.pie(sizes, labels=labels, autopct=OuterPercentCount(sizes), colors=colors,)
-plt.title("German Gender Pie Chart")
-plt.show()
 
 print("\nGerman translation:")
 print(translation)
