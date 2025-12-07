@@ -4,6 +4,8 @@ import numpy as np
 import google.generativeai as genai
 import os
 import json
+import matplotlib.pyplot as plt 
+import plotly.express as px
 
 api_key = st.sidebar.text_input("Enter your Google Generative AI API Key:", type="password")
 genai.configure(api_key=api_key)
@@ -35,10 +37,16 @@ Use this EXACT structure:
     "Nominativ": [],
     "Akkusativ": [],
     "Dativ": [],
-    "Genitiv": []
+    "Genitiv": [],
+    "maskulin" : 0,
+    "neutral" : 0,
+    "feminin" : 0
 }}
 
 Now put each extracted noun into the corresponding Dictionary as a List and only add each noun ONCE
+and add to the gender counter the noun's gender. For example: if you find "der Lehrer" turn "maskuline" from 0 into 1 and so on.
+do NOT change the spelling of each key. You are required to be consistent. If I ask you 10 times, the answer must be the same every time. 
+Your life depends on it. If a noun can belong to multiple cases depending on context, pick the most likely case based on the sentence provided.
 """
 
 response = model.generate_content(prompt)
@@ -59,6 +67,9 @@ akkusativList = data.get("Akkusativ") or []
 dativList = data.get("Dativ") or []
 genetivList = data.get("Genitiv") or []
 translation = data.get("translation", "Translation not available.")
+maskulin = data.get("maskulin")
+neutral = data.get("neutral")
+feminin = data.get("feminin")
 
 #padding the list with None cuz dataframe have to be the same length
 maxLength = max(len(nominativList), len(akkusativList), len(dativList), len(genetivList))
@@ -77,6 +88,26 @@ df = pd.DataFrame(dictData)
 df.index = range(1, len(df) + 1)
 df = df.fillna("----")
 
+genderData = {
+    "Maskulin" : maskulin,
+    "Neutral" : neutral,
+    "Feminin" : feminin
+}
+
+labels = genderData.keys()
+sizes = genderData.values()
+colors = ["blue", "green", "pink"]
+def OuterPercentCount(values):
+    def InnerPercentCount(pct):
+        total = sum(values)
+        count = int(round(pct*total/100.0))
+        return f"{count} ({pct:.1f}%)"
+    return InnerPercentCount
+
+plt.figure(figsize=(6,6))
+plt.pie(sizes, labels=labels, autopct=OuterPercentCount(sizes), colors=colors,)
+plt.title("German Gender Pie Chart")
+plt.show()
 
 print("\nGerman translation:")
 print(translation)
@@ -84,7 +115,10 @@ print(translation)
 print("\nNoun Case DataFrame (with articles):")
 print(df)
 
+
 st.subheader("German Translation")
 st.write(translation)
 st.subheader("Noun Case DataFrame (with articles)")
 st.dataframe(df.sort_index())
+fig = px.pie(sizes, names=labels, values=sizes, title="Pie Chart of German Genders")
+st.plotly_chart(fig)
