@@ -85,4 +85,6 @@ print("\nNoun Case DataFrame (with articles):")
 print(df)
 
 st.subheader("German Translation")
+st.write(translation)
+st.subheader("Noun Case DataFrame (with articles)")
 st.dataframe(df.sort_index())
