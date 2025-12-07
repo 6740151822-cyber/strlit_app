@@ -10,6 +10,8 @@ import plotly.express as px
 api_key = st.sidebar.text_input("Enter your Google Generative AI API Key:", type="password")
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel("gemini-2.5-flash-lite")
+generation_config = {"temperature": 0.2}
+
 
 st.title("ENG to GER Noun Case Extractor with Articles")
 sentence = st.text_area("Enter a sentence to translate into German and extract nouns with cases:", height=150)
@@ -21,7 +23,8 @@ Translate the following sentence into German AND extract all nouns by German gra
 For each noun, include its definite article (der/die/das) or indefinite article as part of the noun, e.g., "der Lehrer".
 Make sure the article is the same as how it appears in your given translation, for example: "den Himmel" stays as "den Himmel" and gets put into Akkusativ.
 Don't just put them into the list based on their articles, analyze their ACTUAL role in the sentence.
-Also include ich, du, wir,.... ,and also names.
+do NOT include ich, du, wir,.... ,and also names.
+do NOT extract the adjectives, ONLY the noun itself and article.
 
 Sentence: "{sentence}"
 
@@ -44,12 +47,23 @@ Use this EXACT structure:
 }}
 
 Now put each extracted noun into the corresponding Dictionary as a List and only add each noun ONCE
-and add to the gender counter the noun's gender. For example: if you find "der Lehrer" turn "maskuline" from 0 into 1 and so on.
-do NOT change the spelling of each key. You are required to be consistent. If I ask you 10 times, the answer must be the same every time. 
-Your life depends on it. If a noun can belong to multiple cases depending on context, pick the most likely case based on the sentence provided.
+and add to the gender counter the noun's gender. For example: if you find "Lehrer" turn "maskuline" from 0 into 1 and so on.
+Make sure to add to "maskulin" "neutral" or "feminin" everytime a noun is found, regardless of case.
+for example:
+
+Das Pferd trifft einen Hund und sie luden die Katze zur Party ein.
+
+    "translation": "Das Pferd trifft einen Hund und sie luden die Katze zur Party ein.", 
+    "Nominativ": [ "Das Pferd" ], 
+    "Akkusativ": [ "einen Hund", "die Katze" ], 
+    "Dativ": [ "zur Party" ], 
+    "Genitiv": [], 
+    "maskulin": 1, "neutral": 1, "feminin": 2 
+
+this is because Hund is maskulin, Katze is feminin, Pferd is neutral, Party is feminin
 """
 
-response = model.generate_content(prompt)
+response = model.generate_content(prompt, generation_config=generation_config)
 
 #ts cuz dumbass ai never gives the same response for some reason
 raw = response.text.strip().replace("```json", "").replace("```", "")
