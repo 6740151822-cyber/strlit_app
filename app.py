@@ -63,7 +63,6 @@ this is because Hund is maskulin, Katze is feminin, Pferd is neutral, Party is f
 
 response = model.generate_content(prompt, generation_config=generation_config)
 
-#ts cuz dumbass ai never gives the same response for some reason
 raw = response.text.strip().replace("```json", "").replace("```", "")
 
 try:
@@ -73,7 +72,6 @@ except json.JSONDecodeError:
     print(raw)
     data = {}
 
-#turn into list again cuz using raw file will crash if its wrong and cuz ai is stupid
 nominativList = data.get("Nominativ") or []
 akkusativList = data.get("Akkusativ") or []
 dativList = data.get("Dativ") or []
@@ -83,7 +81,6 @@ maskulin = data.get("maskulin")
 neutral = data.get("neutral")
 feminin = data.get("feminin")
 
-#padding the list with None cuz dataframe have to be the same length
 maxLength = max(len(nominativList), len(akkusativList), len(dativList), len(genetivList))
 
 nominativList += [None] * (maxLength - len(nominativList))
