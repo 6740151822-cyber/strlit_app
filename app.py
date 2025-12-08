@@ -8,10 +8,10 @@ import plotly.express as px
 api_key = st.sidebar.text_input("Enter your Google Generative AI API Key:", type="password")
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel("gemini-2.5-flash-lite")
-generation_config = {"temperature": 0.2}
+generation_config = {"temperature": 0.1}
 
 
-st.title("ENG to GER Noun Case Extractor with Articles")
+st.title("ENG to GER Noun Case Extractor with Articles and Gender Count")
 sentence = st.text_area("Enter a sentence to translate into German and extract nouns with cases:", height=150)
 if st.button("Translate and Extract Nouns"):
     if sentence.strip() == "":
@@ -45,7 +45,7 @@ Use this EXACT structure:
 }}
 
 Now put each extracted noun into the corresponding Dictionary as a List and only add each noun ONCE
-and add to the gender counter the noun's gender. For example: if you find "Lehrer" turn "maskuline" from 0 into 1 and so on.
+and add to the gender counter the noun's gender. For example: if you find "Lehrer" turn "maskulin" from 0 into 1 and so on.
 Make sure to add to "maskulin" "neutral" or "feminin" everytime a noun is found, regardless of case.
 for example:
 
@@ -59,6 +59,12 @@ Das Pferd trifft einen Hund und sie luden die Katze zur Party ein.
     "maskulin": 1, "neutral": 1, "feminin": 2 
 
 this is because Hund is maskulin, Katze is feminin, Pferd is neutral, Party is feminin
+
+After that, explain the reason why you put each of the nouns into the corresponding case, in 2 sentences maximum. The reason must NOT be included in the JSON output.
+and must be grammatically correct. You do not need to output this explanation, just the JSON. when you are explaining to yourself, double check
+if the noun is really in that case in the dictionary. If, for example, you explained that a noun is in akkusative but it's not in the akkusativ list,
+or a noun that YOU have explained to be nominativ but it's not in the nominativ list, then you made a mistake and the list must be corrected accordingly.
+
 """
 
 response = model.generate_content(prompt, generation_config=generation_config)
@@ -124,7 +130,7 @@ st.subheader("German Translation")
 st.write(translation)
 st.subheader("Noun Case DataFrame (with articles)")
 st.dataframe(df.sort_index())
-fig = px.pie(sizes, names=labels, values=sizes, title="Pie Chart of German Genders")
+fig = px.pie(sizes, names=labels, values=sizes, title="Pie Chart of Genders")
 st.plotly_chart(fig)
 
 @st.cache_data
